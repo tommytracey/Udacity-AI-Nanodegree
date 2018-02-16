@@ -156,11 +156,45 @@ test_std_tryit(df_std)
 #         - adding additional deltas
 # 
 
-# In[ ]:
+# In[11]:
 
 # TODO add features for normalized by speaker values of left, right, x, y
 # Name these 'norm-rx', 'norm-ry', 'norm-lx', and 'norm-ly'
 # using Z-score scaling (X-Xmean)/Xstd
+
+
+# In[12]:
+
+## add remaining mean features to dataset
+
+asl.df['left-y-mean'] = asl.df['speaker'].map(df_means['left-y'])
+asl.df['right-x-mean'] = asl.df['speaker'].map(df_means['right-x'])
+asl.df['right-y-mean'] = asl.df['speaker'].map(df_means['right-y'])
+
+asl.df.head()
+
+
+# In[13]:
+
+## add standard deviation features to dataset
+
+asl.df['left-x-std'] = asl.df['speaker'].map(df_std['left-x'])
+asl.df['left-y-std'] = asl.df['speaker'].map(df_std['left-y'])
+asl.df['right-x-std'] = asl.df['speaker'].map(df_std['right-x'])
+asl.df['right-y-std'] = asl.df['speaker'].map(df_std['right-y'])
+
+asl.df.head()
+
+
+# In[14]:
+
+## Normalized features
+
+asl.df['norm-rx']= (asl.df['right-x'] - asl.df['right-x-mean']) / asl.df['right-x-std']
+asl.df['norm-ry']= (asl.df['right-y'] - asl.df['right-y-mean']) / asl.df['right-y-std']
+asl.df['norm-lx']= (asl.df['left-x'] - asl.df['left-x-mean']) / asl.df['left-x-std']
+asl.df['norm-ly']= (asl.df['left-y'] - asl.df['left-y-mean']) / asl.df['left-y-std']
+
 
 features_norm = ['norm-rx', 'norm-ry', 'norm-lx','norm-ly']
 
