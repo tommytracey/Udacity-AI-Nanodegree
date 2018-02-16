@@ -156,6 +156,8 @@ test_std_tryit(df_std)
 #         - adding additional deltas
 # 
 
+# #### Normalized Cartesian Coordinates
+
 # In[11]:
 
 # TODO add features for normalized by speaker values of left, right, x, y
@@ -199,22 +201,53 @@ asl.df['norm-ly']= (asl.df['left-y'] - asl.df['left-y-mean']) / asl.df['left-y-s
 features_norm = ['norm-rx', 'norm-ry', 'norm-lx','norm-ly']
 
 
-# In[ ]:
+# #### Polar Coordinates
+
+# In[15]:
 
 # TODO add features for polar coordinate values where the nose is the origin
 # Name these 'polar-rr', 'polar-rtheta', 'polar-lr', and 'polar-ltheta'
 # Note that 'polar-rr' and 'polar-rtheta' refer to the radius and angle
 
+
+# In[16]:
+
+asl.df['polar-rr'] = np.sqrt(np.square(asl.df['grnd-rx']) + np.square(asl.df['grnd-ry']))
+asl.df['polar-lr'] = np.sqrt(np.square(asl.df['grnd-lx']) + np.square(asl.df['grnd-ly']))
+
+asl.df['polar-rtheta'] = np.arctan2(asl.df['grnd-rx'], asl.df['grnd-ry'])
+asl.df['polar-ltheta'] = np.arctan2(asl.df['grnd-lx'], asl.df['grnd-ly'])
+
+asl.df['polar-rtheta'] = asl.df['polar-rtheta'].fillna(0)
+asl.df['polar-ltheta'] = asl.df['polar-ltheta'].fillna(0)
+
 features_polar = ['polar-rr', 'polar-rtheta', 'polar-lr', 'polar-ltheta']
 
+
+# #### Delta Difference
 
 # In[ ]:
 
 # TODO add features for left, right, x, y differences by one time step, i.e. the "delta" values discussed in the lecture
 # Name these 'delta-rx', 'delta-ry', 'delta-lx', and 'delta-ly'
 
+
+# In[17]:
+
+asl.df['delta-rx'] = asl.df['right-x'].diff()
+asl.df['delta-ry'] = asl.df['right-y'].diff()
+asl.df['delta-lx'] = asl.df['left-x'].diff()
+asl.df['delta-ly'] = asl.df['left-y'].diff()
+
+asl.df['delta-rx'] = asl.df['delta-rx'].fillna(0)
+asl.df['delta-ry'] = asl.df['delta-ry'].fillna(0)
+asl.df['delta-lx'] = asl.df['delta-lx'].fillna(0)
+asl.df['delta-ly'] = asl.df['delta-ly'].fillna(0)
+
 features_delta = ['delta-rx', 'delta-ry', 'delta-lx', 'delta-ly']
 
+
+# #### Custom Features
 
 # In[ ]:
 
