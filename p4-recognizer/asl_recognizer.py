@@ -36,7 +36,7 @@
 # 
 # To start, let's set up the initial database and select an example set of features for the training set.  At the end of Part 1, you will create additional feature sets for experimentation. 
 
-# In[1]:
+# In[2]:
 
 import numpy as np
 import pandas as pd
@@ -47,7 +47,7 @@ asl = AslDb() # initializes the database
 asl.df.head() # displays the first five rows of the asl database, indexed by video and frame
 
 
-# In[2]:
+# In[3]:
 
 asl.df.ix[98,1]  # look at the data available for an individual frame
 
@@ -58,7 +58,7 @@ asl.df.ix[98,1]  # look at the data available for an individual frame
 # ##### Feature selection for training the model
 # The objective of feature selection when training a model is to choose the most relevant variables while keeping the model as simple as possible, thus reducing training time.  We can use the raw features already provided or derive our own and add columns to the pandas dataframe `asl.df` for selection. As an example, in the next cell a feature named `'grnd-ry'` is added. This feature is the difference between the right-hand y value and the nose y value, which serves as the "ground" right y value. 
 
-# In[3]:
+# In[4]:
 
 asl.df['grnd-ry'] = asl.df['right-y'] - asl.df['nose-y']
 asl.df.head()  # the new feature 'grnd-ry' is now in the frames dictionary
@@ -66,7 +66,7 @@ asl.df.head()  # the new feature 'grnd-ry' is now in the frames dictionary
 
 # ##### Try it!
 
-# In[4]:
+# In[5]:
 
 from asl_utils import test_features_tryit
 # TODO add df columns for 'grnd-rx', 'grnd-ly', 'grnd-lx' representing differences between hand and nose locations
@@ -79,7 +79,7 @@ asl.df['grnd-lx'] = asl.df['left-x'] - asl.df['nose-x']
 test_features_tryit(asl)
 
 
-# In[5]:
+# In[6]:
 
 # collect the features into a list
 features_ground = ['grnd-rx','grnd-ry','grnd-lx','grnd-ly']
@@ -90,7 +90,7 @@ features_ground = ['grnd-rx','grnd-ry','grnd-lx','grnd-ly']
 # ##### Build the training set
 # Now that we have a feature list defined, we can pass that list to the `build_training` method to collect the features for all the words in the training set.  Each word in the training set has multiple examples from various videos.  Below we can see the unique words that have been loaded into the training set:
 
-# In[6]:
+# In[7]:
 
 training = asl.build_training(features_ground)
 print("Training words: {}".format(training.words))
@@ -98,7 +98,7 @@ print("Training words: {}".format(training.words))
 
 # The training data in `training` is an object of class `WordsData` defined in the `asl_data` module.  in addition to the `words` list, data can be accessed with the `get_all_sequences`, `get_all_Xlengths`, `get_word_sequences`, and `get_word_Xlengths` methods. We need the `get_word_Xlengths` method to train multiple sequences with the `hmmlearn` library.  In the following example, notice that there are two lists; the first is a concatenation of all the sequences(the X portion) and the second is a list of the sequence lengths(the Lengths portion).
 
-# In[7]:
+# In[8]:
 
 training.get_word_Xlengths('CHOCOLATE')
 
@@ -106,7 +106,7 @@ training.get_word_Xlengths('CHOCOLATE')
 # ###### More feature sets
 # So far we have a simple feature set that is enough to get started modeling.  However, we might get better results if we manipulate the raw values a bit more, so we will go ahead and set up some other options now for experimentation later.  For example, we could normalize each speaker's range of motion with grouped statistics using [Pandas stats](http://pandas.pydata.org/pandas-docs/stable/api.html#api-dataframe-stats) functions and [pandas groupby](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.groupby.html).  Below is an example for finding the means of all speaker subgroups.
 
-# In[8]:
+# In[9]:
 
 df_means = asl.df.groupby('speaker').mean()
 df_means
@@ -114,7 +114,7 @@ df_means
 
 # To select a mean that matches by speaker, use the pandas [map](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.map.html) method:
 
-# In[9]:
+# In[10]:
 
 asl.df['left-x-mean']= asl.df['speaker'].map(df_means['left-x'])
 asl.df.head()
@@ -122,7 +122,7 @@ asl.df.head()
 
 # ##### Try it!
 
-# In[10]:
+# In[11]:
 
 from asl_utils import test_std_tryit
 # TODO Create a dataframe named `df_std` with standard deviations grouped by speaker
@@ -158,14 +158,14 @@ test_std_tryit(df_std)
 
 # #### Normalized Cartesian Coordinates
 
-# In[11]:
+# In[12]:
 
 # TODO add features for normalized by speaker values of left, right, x, y
 # Name these 'norm-rx', 'norm-ry', 'norm-lx', and 'norm-ly'
 # using Z-score scaling (X-Xmean)/Xstd
 
 
-# In[12]:
+# In[13]:
 
 ## add remaining mean features to dataset
 
@@ -176,7 +176,7 @@ asl.df['right-y-mean'] = asl.df['speaker'].map(df_means['right-y'])
 asl.df.head()
 
 
-# In[13]:
+# In[14]:
 
 ## add standard deviation features to dataset
 
@@ -188,7 +188,7 @@ asl.df['right-y-std'] = asl.df['speaker'].map(df_std['right-y'])
 asl.df.head()
 
 
-# In[14]:
+# In[15]:
 
 ## Normalized features
 
@@ -203,14 +203,14 @@ features_norm = ['norm-rx', 'norm-ry', 'norm-lx','norm-ly']
 
 # #### Polar Coordinates
 
-# In[15]:
+# In[16]:
 
 # TODO add features for polar coordinate values where the nose is the origin
 # Name these 'polar-rr', 'polar-rtheta', 'polar-lr', and 'polar-ltheta'
 # Note that 'polar-rr' and 'polar-rtheta' refer to the radius and angle
 
 
-# In[16]:
+# In[17]:
 
 asl.df['polar-rr'] = np.sqrt(np.square(asl.df['grnd-rx']) + np.square(asl.df['grnd-ry']))
 asl.df['polar-lr'] = np.sqrt(np.square(asl.df['grnd-lx']) + np.square(asl.df['grnd-ly']))
@@ -226,13 +226,13 @@ features_polar = ['polar-rr', 'polar-rtheta', 'polar-lr', 'polar-ltheta']
 
 # #### Delta Difference
 
-# In[ ]:
+# In[18]:
 
 # TODO add features for left, right, x, y differences by one time step, i.e. the "delta" values discussed in the lecture
 # Name these 'delta-rx', 'delta-ry', 'delta-lx', and 'delta-ly'
 
 
-# In[17]:
+# In[19]:
 
 asl.df['delta-rx'] = asl.df['right-x'].diff()
 asl.df['delta-ry'] = asl.df['right-y'].diff()
@@ -247,19 +247,78 @@ asl.df['delta-ly'] = asl.df['delta-ly'].fillna(0)
 features_delta = ['delta-rx', 'delta-ry', 'delta-lx', 'delta-ly']
 
 
+# #### Verify Features
+
+# In[20]:
+
+from random import randint
+
+rand = randint(0, len(asl.df)-10)
+asl.df[rand:(rand+10)]
+
+
 # #### Custom Features
 
-# In[ ]:
+# In[21]:
 
 # TODO add features of your own design, which may be a combination of the above or something else
 # Name these whatever you would like
 
+# helper function that rescales the original value between [0,1]
+def rescale(orig, min_, max_):
+    return (orig - min_) / (max_ - min_)
+
+# min and max values for each speaker
+df_mins = asl.df.groupby('speaker').min()
+df_maxs = asl.df.groupby('speaker').max()
+
+# New features set #1: rescaled ground features
+feat_grnd = ['grnd-rx', 'grnd-ry', 'grnd-lx', 'grnd-ly']
+feat_grnd_min = ['grnd-rx-min', 'grnd-ry-min', 'grnd-lx-min', 'grnd-ly-min']
+feat_grnd_max = ['grnd-rx-max', 'grnd-ry-max', 'grnd-lx-max', 'grnd-ly-max']
+feat_grnd_rescaled = ['grnd-rescaled-rx', 'grnd-rescaled-ry', 'grnd-rescaled-lx', 'grnd-rescaled-ly']
+
+for i, val in enumerate(feat_grnd):
+    asl.df[feat_grnd_min[i]] = asl.df['speaker'].map(df_mins[val])
+    asl.df[feat_grnd_max[i]] = asl.df['speaker'].map(df_maxs[val])
+    
+    asl.df[feat_grnd_rescaled[i]] = rescale(asl.df[val], 
+                                                asl.df[feat_grnd_min[i]],
+                                                asl.df[feat_grnd_max[i]])
+
+
+# In[23]:
+
+# New features set #2: rescaled delta features
+feat_delta = ['delta-rx', 'delta-ry', 'delta-lx', 'delta-ly']
+feat_delta_min = ['delta-rx-min', 'delta-ry-min', 'delta-lx-min', 'delta-ly-min']
+feat_delta_max = ['delta-rx-max', 'delta-ry-max', 'delta-lx-max', 'delta-ly-max']
+feat_delta_rescaled = ['delta-rescaled-rx', 'delta-rescaled-ry', 'delta-rescaled-lx', 'delta-rescaled-ly']
+
+for i, val in enumerate(feat_delta):
+    asl.df[feat_delta_min[i]] = asl.df['speaker'].map(df_mins[val])
+    asl.df[feat_delta_max[i]] = asl.df['speaker'].map(df_maxs[val])
+    
+    asl.df[feat_delta_rescaled[i]] = rescale(asl.df[val], 
+                                                 asl.df[feat_delta_min[i]],
+                                                 asl.df[feat_delta_max[i]])
+    
+
+
+# In[25]:
+
 # TODO define a list named 'features_custom' for building the training set
+
+features_custom = feat_grnd_rescaled + feat_delta_rescaled
+
+asl.df.head()
 
 
 # **Question 1:**  What custom features did you choose for the features_custom set and why?
 # 
 # **Answer 1:**
+# 
+# For my 'features_custom' set I created and combined two new feature sets. I rescaled both the 'grnd' features (i.e. the difference between hand and nose positions) as well as the 'delta' features (i.e. the difference between consecutive measurements). Both of these feature sets are now normalized between 0 and 1. This should improve model convergence and training efficiency. 
 
 # <a id='part1_test'></a>
 # ### Features Unit Testing
