@@ -325,7 +325,7 @@ asl.df.head()
 # Run the following unit tests as a sanity check on the defined "ground", "norm", "polar", and 'delta"
 # feature sets.  The test simply looks for some valid values but is not exhaustive.  However, the project should not be submitted if these tests don't pass.
 
-# In[ ]:
+# In[26]:
 
 import unittest
 # import numpy as np
