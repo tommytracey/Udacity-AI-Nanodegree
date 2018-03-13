@@ -365,7 +365,7 @@ unittest.TextTestRunner().run(suite)
 # ##### Train a single word
 # Now that we have built a training set with sequence data, we can "train" models for each word.  As a simple starting example, we train a single word using Gaussian hidden Markov models (HMM).   By using the `fit` method during training, the [Baum-Welch Expectation-Maximization](https://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm) (EM) algorithm is invoked iteratively to find the best estimate for the model *for the number of hidden states specified* from a group of sample seequences. For this example, we *assume* the correct number of hidden states is 3, but that is just a guess.  How do we know what the "best" number of states for training is?  We will need to find some model selection technique to choose the best parameter.
 
-# In[ ]:
+# In[27]:
 
 import warnings
 from hmmlearn.hmm import GaussianHMM
@@ -387,7 +387,7 @@ print("logL = {}".format(logL))
 
 # The HMM model has been trained and information can be pulled from the model, including means and variances for each feature and hidden state.  The [log likelihood](http://math.stackexchange.com/questions/892832/why-we-consider-log-likelihood-instead-of-likelihood-in-gaussian-distribution) for any individual sample or group of samples can also be calculated with the `score` method.
 
-# In[ ]:
+# In[28]:
 
 def show_model_stats(word, model):
     print("Number of states trained in model for {} is {}".format(word, model.n_components))    
@@ -404,10 +404,10 @@ show_model_stats(demoword, model)
 # ##### Try it!
 # Experiment by changing the feature set, word, and/or num_hidden_states values in the next cell to see changes in values.  
 
-# In[ ]:
+# In[48]:
 
 my_testword = 'CHOCOLATE'
-model, logL = train_a_word(my_testword, 3, features_ground) # Experiment here with different parameters
+model, logL = train_a_word(my_testword, 5, features_ground) # Experiment here with different parameters
 show_model_stats(my_testword, model)
 print("logL = {}".format(logL))
 
@@ -415,12 +415,12 @@ print("logL = {}".format(logL))
 # ##### Visualize the hidden states
 # We can plot the means and variances for each state and feature.  Try varying the number of states trained for the HMM model and examine the variances.  Are there some models that are "better" than others?  How can you tell?  We would like to hear what you think in the classroom online.
 
-# In[ ]:
+# In[49]:
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[ ]:
+# In[50]:
 
 import math
 from matplotlib import (cm, pyplot as plt, mlab)
@@ -458,12 +458,12 @@ visualize(my_testword, model)
 # 
 # You will train each word in the training set with a range of values for the number of hidden states, and then score these alternatives with the model selector, choosing the "best" according to each strategy. The simple case of training with a constant value for `n_components` can be called using the provided `SelectorConstant` subclass as follow:
 
-# In[ ]:
+# In[55]:
 
 from my_model_selectors import SelectorConstant
 
-training = asl.build_training(features_ground)  # Experiment here with different feature sets defined in part 1
-word = 'VEGETABLE' # Experiment here with different words
+training = asl.build_training(features_custom)  # Experiment here with different feature sets defined in part 1
+word = 'BOOK' # Experiment here with different words
 model = SelectorConstant(training.get_all_sequences(), training.get_all_Xlengths(), word, n_constant=3).select()
 print("Number of states trained in model for {} is {}".format(word, model.n_components))
 
@@ -471,12 +471,12 @@ print("Number of states trained in model for {} is {}".format(word, model.n_comp
 # ##### Cross-validation folds
 # If we simply score the model with the Log Likelihood calculated from the feature sequences it has been trained on, we should expect that more complex models will have higher likelihoods. However, that doesn't tell us which would have a better likelihood score on unseen data.  The model will likely be overfit as complexity is added.  To estimate which topology model is better using only the training data, we can compare scores using cross-validation.  One technique for cross-validation is to break the training set into "folds" and rotate which fold is left out of training.  The "left out" fold scored.  This gives us a proxy method of finding the best model to use on "unseen data". In the following example, a set of word sequences is broken into three folds using the [scikit-learn Kfold](http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html) class object. When you implement `SelectorCV`, you will use this technique.
 
-# In[ ]:
+# In[56]:
 
 from sklearn.model_selection import KFold
 
-training = asl.build_training(features_ground) # Experiment here with different feature sets
-word = 'VEGETABLE' # Experiment here with different words
+training = asl.build_training(features_custom) # Experiment here with different feature sets
+word = 'BOOK' # Experiment here with different words
 word_sequences = training.get_word_sequences(word)
 split_method = KFold()
 for cv_train_idx, cv_test_idx in split_method.split(word_sequences):

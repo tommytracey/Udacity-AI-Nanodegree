@@ -66,7 +66,22 @@ class SelectorBIC(ModelSelector):
 
     http://www2.imm.dtu.dk/courses/02433/doc/ch6_slides.pdf
     Bayesian information criteria: BIC = -2 * logL + p * logN
+
+    L is the likelihood of the fitted model.
+    p is the number of parameters.
+    N is the number of data points.
+
+    The lower the BIC score the "better" the model.The term −2 log L decreases
+    with increasing model complexity (more parameters), whereas the penalties
+    p log N increase with increasing complexity. The BIC applies a larger penalty
+    when N > e**2 = 7.4.
     """
+
+    def calc_num_params(self, num_states, num_data_points):
+        return ( num_states ** 2 ) + ( 2 * num_states * num_data_points ) - 1
+
+    def calc_score_bic(self, logL, num_params, num_data_points):
+        return (-2 * logL) + (num_params * np.log(num_data_points))
 
     def select(self):
         """ select the best model for self.this_word based on
@@ -77,7 +92,39 @@ class SelectorBIC(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection based on BIC scores
-        raise NotImplementedError
+        best_Model = None
+        best_BIC_score = float("inf")
+        num_data_points, num_features = self.X.shape
+        log_num_data_points = np.log(num_data_points)
+
+        # iterate through range of components
+        for n_components in range(self.min_n_components, self.max_n_components + 1):
+            # create the model
+            model = self.base_model(n_components)
+
+            # check model
+            if model is not None:
+                try:
+                    # calculate the model score
+                    logL = model.score(self.X, self.lengths)
+
+                    # calculate BIC score
+                    num_params = self.calc_num_params(num_states, num_data_points)
+                    BIC_score = self.calc_score_bic(logL, num_params, num_data_points)
+
+                    # check BIC score against best model
+                    if BIC_score < best_BIC_score:
+                        best_BIC_score = BIC_score
+                        best_Model = model
+                        if self.verbose:
+                            print("best model for {} so far with {} states. BIC score is {}".format(
+                                self.this_word, n_components, best_BIC_score))
+                except:
+                    if self.verbose:
+                        print("failure on {} with {} states by model score".format(
+                            self.this_word, n_components))
+
+        return bestModel
 
 
 class SelectorDIC(ModelSelector):
