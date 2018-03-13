@@ -71,7 +71,7 @@ class SelectorBIC(ModelSelector):
     p is the number of parameters.
     N is the number of data points.
 
-    The lower the BIC score the "better" the model.The term −2 log L decreases
+    The lower the BIC score the "better" the model. The term −2 log L decreases
     with increasing model complexity (more parameters), whereas the penalties
     p log N increase with increasing complexity. The BIC applies a larger penalty
     when N > e**2 = 7.4.
@@ -92,7 +92,7 @@ class SelectorBIC(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection based on BIC scores
-        best_Model = None
+        best_model = None
         best_BIC_score = float("inf")
         num_data_points, num_features = self.X.shape
         log_num_data_points = np.log(num_data_points)
@@ -102,7 +102,7 @@ class SelectorBIC(ModelSelector):
             # create the model
             model = self.base_model(n_components)
 
-            # check model
+            # score the model
             if model is not None:
                 try:
                     # calculate the model score
@@ -114,17 +114,16 @@ class SelectorBIC(ModelSelector):
 
                     # check BIC score against best model
                     if BIC_score < best_BIC_score:
-                        best_BIC_score = BIC_score
-                        best_Model = model
+                        best_BIC_score, best_model = BIC_score, model
                         if self.verbose:
-                            print("best model for {} so far with {} states. BIC score is {}".format(
+                            print("word '{}': best model so far has {} states, BIC score = {}".format(
                                 self.this_word, n_components, best_BIC_score))
                 except:
                     if self.verbose:
-                        print("failure on {} with {} states by model score".format(
+                        print("word '{}': model failed with {} states".format(
                             self.this_word, n_components))
 
-        return bestModel
+        return best_model
 
 
 class SelectorDIC(ModelSelector):
@@ -134,14 +133,69 @@ class SelectorDIC(ModelSelector):
     Document Analysis and Recognition, 2003. Proceedings. Seventh International Conference on. IEEE, 2003.
     http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.58.6208&rep=rep1&type=pdf
     https://pdfs.semanticscholar.org/ed3d/7c4a5f607201f3848d4c02dd9ba17c791fc2.pdf
-    DIC = log(P(X(i)) - 1/(M-1)SUM(log(P(X(all but i))
+
+    DIC = log(P(X(i)) - 1/(M - 1) * sum(log(P(X(all but i))
+
+    "L" is likelihood of data fitting the model ("fitted" model)
+    X is input training data given in the form of a word dictionary
+    X(i) is the current word being evaluated
+    M is a specific model
+
+    Goal is to find the number of components where the difference is largest.
+    The higher the DIC score the "better" the model. A high DIC scores means there
+    is a high likelihood (small negative number) associated with the original word
+    and a low likelihood (big negative number) with the other words in the dictionary.
     '''
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection based on DIC scores
-        raise NotImplementedError
+        best_model = None
+        best_DIC_score = float("-inf")
+
+        # iterate through range of components
+        for n_components in range(self.min_n_components, self.max_n_components + 1):
+            # create the model
+            model = self.base_model(n_components)
+
+            # score the model
+            if model is not None:
+                try:
+                    # calculate the model score
+                    logL = model.score(self.X, self.lengths)
+
+                    # calculate scores for all other words
+                    word_count = 0
+                    sum_logL = 0
+                    for word, Xlength in self.hwords.items():
+                        if word != self.this_word:
+                            try:
+                                sum_logL += model.score(Xlength)
+                                word_count += 1
+                            except:
+                                if self.verbose:
+                                    print("word '{}': model failed with {} states".format(
+                                        word, n_components))
+
+                    # calculate DIC score
+                    if word_count > 1:
+                        DIC_score = logL - sum_logL / (word_count-1)
+                    else
+                        DIC_score = logL
+
+                    # check DIC score against best model
+                    if best_DIC_score < DIC_score:
+                        best_DIC_score, best_model = DIC_score, model
+                        if self.verbose:
+                            print("word '{}': best model so far has {} sta  tes, DIC score = {}".format(
+                                self.this_word, n_components, best_DIC_score))
+                except:
+                    if self.verbose:
+                        print("word '{}': model failed with {} states".format(
+                            self.this_word, n_components))
+
+        return best_model
 
 
 class SelectorCV(ModelSelector):
