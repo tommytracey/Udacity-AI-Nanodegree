@@ -569,12 +569,43 @@ for word in words_to_train:
 # **Question 2:**  Compare and contrast the possible advantages and disadvantages of the various model selectors implemented.
 # 
 # **Answer 2:**
+# 
+# 
+# **Cross Validation (CV):**
+# 
+# *Advantages:*
+# - Using cross validation folds allows us to train the model multiple times on different data sets for each state. This helps avoid overfitting and the model should generalize better.  
+# 
+# *Disadvantages:*
+# - Speed. There is overhead in splitting the training data each time a new state is evaluated. In 80% of the above examples, the training time for CV is nearly double that of BIC and DIC.
+# - Also, since CV doesn't penalize models for complexity (as BIC does), you can end up with models with more parameters. In the test examples above, there are up to five states in the CV models, while BIC has a max of three states.
+# 
+# **Bayesian Information Criteria (BIC):**
+# 
+# *Advantages:*
+# - Favors simpler models since it penalizes models for added complexity (e.g. more parameters).
+# - Good performance. Nearly twice as fast as CV for 80% of the test examples above. And marginally faster than DIC.
+# 
+# *Disadvantages:*
+# - Unlike DIC, BIC doesn't weed out models that produce similarly high likelihoods for different words. This may result in lower accuracy.  
+# - BIC could require more training data since it does not use folds like CV. 
+# 
+# **Deviance Information Criteria (DIC):**
+# 
+# *Advantages:*
+# - DIC may result in higher accuracy since it penalizes models if their liklihoods for non-matching words are too similar to likelihoods for the correct word. Although this can't be proven given only the data from the test examples above. 
+# - Good performance. Nearly twice as fast as CV for 80% of the test examples above. But marginally slower than BIC.
+# 
+# *Disadvantages:*
+# - Unlike BIC, DIC doesn't penalize models for added complexity. This may result in models with more parameters and slow down training time. You can see that some of the DIC models have 15 states, where the BIC models have a max of three states.
+# - DIC may also require more training data since it does not use folds like CV. 
+# 
 
 # <a id='part2_test'></a>
 # ### Model Selector Unit Testing
 # Run the following unit tests as a sanity check on the implemented model selectors.  The test simply looks for valid interfaces  but is not exhaustive. However, the project should not be submitted if these tests don't pass.
 
-# In[ ]:
+# In[71]:
 
 from asl_test_model_selectors import TestSelectors
 suite = unittest.TestLoader().loadTestsFromModule(TestSelectors())
