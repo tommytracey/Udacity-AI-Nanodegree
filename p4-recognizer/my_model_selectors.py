@@ -71,10 +71,10 @@ class SelectorBIC(ModelSelector):
     p is the number of parameters.
     N is the number of data points.
 
-    The lower the BIC score the "better" the model. The term −2 log L decreases
-    with increasing model complexity (more parameters), whereas the penalties
-    p log N increase with increasing complexity. The BIC applies a larger penalty
-    when N > e**2 = 7.4.
+    BIC penalizes the model for complexity. The lower the BIC score the "better"
+    the model. The term −2 log L decreases with increasing model complexity (more
+    parameters), whereas the penalties p log N increase with increasing complexity.
+    The BIC applies a larger penalty when N > e**2 = 7.4.
     """
 
     def calc_num_params(self, num_states, num_data_points):
@@ -141,10 +141,13 @@ class SelectorDIC(ModelSelector):
     X(i) is the current word being evaluated
     M is a specific model
 
-    Goal is to find the number of components where the difference is largest.
-    The higher the DIC score the "better" the model. A high DIC scores means there
-    is a high likelihood (small negative number) associated with the original word
-    and a low likelihood (big negative number) with the other words in the dictionary.
+    Instead of a penalty term for complexity (as with BIC), DIC penalizes the model
+    if liklihoods for non-matching words are too similar to model likelihoods for
+    the correct word in the word set. The goal is to find the number of components
+    where the difference is largest. The higher the DIC score the "better" the model.
+    A high DIC scores means there is a high likelihood (small negative number)
+    associated with the original word and a low likelihood (big negative number)
+    with the other words in the dictionary.
     '''
 
     def select(self):
@@ -199,12 +202,47 @@ class SelectorDIC(ModelSelector):
 
 
 class SelectorCV(ModelSelector):
-    ''' select best model based on average log Likelihood of cross-validation folds
+    ''' Select best model based on average log Likelihood of cross-validation folds.
+        The higher the CV score the "better" the model, although the model will
+        likely overfit as complexity is added.
+
+        http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
 
     '''
+
+    def calc_best_CV_score(self, CV_score):
+        # Max of list of lists comparing each item by value at index 0
+        return max(CV_score, key = lambda x: x[0])
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection using CV
-        raise NotImplementedError
+        logLs = []
+        CV_scores = []
+        kf = KFold(n_splits = 3, shuffle = False, random_state = None)
+
+        for num_states in range(self.min_n_components, self.max_n_components + 1):
+            try:
+                # verify there's enough data
+                if len(self.sequences) >= 3:
+                    # break training set into folds
+                    for train_idx, test_idx in kf.split(self.sequences):
+                        # combine training sequences
+                        self.X, self.lengths = combine_sequences(train_idx, self.sequences)
+                        # combine test sequences
+                        X_test, lengths_test = combine_sequences(test_idx, self.sequences)
+
+                        hmm_model = self.base_model(num_states)
+                        logL = hmm_model.score(X_test, lengths_test)
+                else:
+                    hmm_model = self.base_model(num_states)
+                    logL = hmm_model.score(self.X, self.lengths)
+
+                logLs.append(logL)
+                CV_score_avg = np.mean(logLs)
+                CV_scores.append(tuple([CV_score_avg, hmm_model]))
+
+            except Exception as e:
+                pass
+        return self.calc_best_CV_score(CV_scores)[1] if CV_scores else None
