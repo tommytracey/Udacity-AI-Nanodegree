@@ -31,19 +31,19 @@ class ModelSelector(object):
     def select(self):
         raise NotImplementedError
 
-    def base_model(self, num_states):
+    def base_model(self, n_states):
         # with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         # warnings.filterwarnings("ignore", category=RuntimeWarning)
         try:
-            hmm_model = GaussianHMM(n_components=num_states, covariance_type="diag", n_iter=1000,
+            hmm_model = GaussianHMM(n_components=n_states, covariance_type="diag", n_iter=1000,
                                     random_state=self.random_state, verbose=False).fit(self.X, self.lengths)
             if self.verbose:
-                print("model created for {} with {} states".format(self.this_word, num_states))
+                print("model created for {} with {} states".format(self.this_word, n_states))
             return hmm_model
         except:
             if self.verbose:
-                print("failure on {} with {} states".format(self.this_word, num_states))
+                print("failure on {} with {} states".format(self.this_word, n_states))
             return None
 
 
@@ -57,8 +57,8 @@ class SelectorConstant(ModelSelector):
 
         :return: GaussianHMM object
         """
-        best_num_components = self.n_constant
-        return self.base_model(best_num_components)
+        best_n_components = self.n_constant
+        return self.base_model(best_n_components)
 
 
 class SelectorBIC(ModelSelector):
@@ -77,11 +77,11 @@ class SelectorBIC(ModelSelector):
     The BIC applies a larger penalty when N > e**2 = 7.4.
     """
 
-    def calc_num_params(self, num_states, num_data_points):
-        return ( num_states ** 2 ) + ( 2 * num_states * num_data_points ) - 1
+    def calc_n_params(self, n_components, n_data_points):
+        return ( n_components ** 2 ) + ( 2 * n_components * n_data_points ) - 1
 
-    def calc_score_bic(self, logL, num_params, num_data_points):
-        return (-2 * logL) + (num_params * np.log(num_data_points))
+    def calc_bic_score(self, logL, n_params, n_data_points):
+        return (-2 * logL) + (n_params * np.log(n_data_points))
 
     def select(self):
         """ select the best model for self.this_word based on
@@ -93,9 +93,9 @@ class SelectorBIC(ModelSelector):
 
         # TODO implement model selection based on BIC scores
         best_model = None
-        best_BIC_score = float("inf")
-        num_data_points, num_features = self.X.shape
-        log_num_data_points = np.log(num_data_points)
+        best_bic_score = float("inf")
+        n_data_points, n_features = self.X.shape
+        log_n_data_points = np.log(n_data_points)
 
         # iterate through range of components
         for n_components in range(self.min_n_components, self.max_n_components + 1):
@@ -109,15 +109,15 @@ class SelectorBIC(ModelSelector):
                     logL = model.score(self.X, self.lengths)
 
                     # calculate BIC score
-                    num_params = self.calc_num_params(num_states, num_data_points)
-                    BIC_score = self.calc_score_bic(logL, num_params, num_data_points)
+                    n_params = self.calc_n_params(n_components, n_data_points)
+                    bic_score = self.calc_bic_score(logL, n_params, n_data_points)
 
                     # check BIC score against best model
-                    if BIC_score < best_BIC_score:
-                        best_BIC_score, best_model = BIC_score, model
+                    if bic_score < best_bic_score:
+                        best_bic_score, best_model = bic_score, model
                         if self.verbose:
                             print("word '{}': best model so far has {} states, BIC score = {}".format(
-                                self.this_word, n_components, best_BIC_score))
+                                self.this_word, n_components, best_bic_score))
                 except:
                     if self.verbose:
                         print("word '{}': model failed with {} states".format(
@@ -155,7 +155,7 @@ class SelectorDIC(ModelSelector):
 
         # TODO implement model selection based on DIC scores
         best_model = None
-        best_DIC_score = float("-inf")
+        best_dic_score = float("-inf")
 
         # iterate through range of components
         for n_components in range(self.min_n_components, self.max_n_components + 1):
@@ -183,16 +183,16 @@ class SelectorDIC(ModelSelector):
 
                     # calculate DIC score
                     if word_count > 1:
-                        DIC_score = logL - sum_logL / (word_count-1)
-                    else
-                        DIC_score = logL
+                        dic_score = logL - sum_logL / (word_count-1)
+                    else:
+                        dic_score = logL
 
                     # check DIC score against best model
-                    if best_DIC_score < DIC_score:
-                        best_DIC_score, best_model = DIC_score, model
+                    if best_dic_score < dic_score:
+                        best_dic_score, best_model = dic_score, model
                         if self.verbose:
                             print("word '{}': best model so far has {} sta  tes, DIC score = {}".format(
-                                self.this_word, n_components, best_DIC_score))
+                                self.this_word, n_components, best_dic_score))
                 except:
                     if self.verbose:
                         print("word '{}': model failed with {} states".format(
@@ -210,19 +210,19 @@ class SelectorCV(ModelSelector):
 
     '''
 
-    def calc_best_CV_score(self, CV_score):
+    def calc_best_cv_score(self, cv_score):
         # Max of list of lists comparing each item by value at index 0
-        return max(CV_score, key = lambda x: x[0])
+        return max(cv_score, key = lambda x: x[0])
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection using CV
         logLs = []
-        CV_scores = []
+        cv_scores = []
         kf = KFold(n_splits = 3, shuffle = False, random_state = None)
 
-        for num_states in range(self.min_n_components, self.max_n_components + 1):
+        for n_components in range(self.min_n_components, self.max_n_components + 1):
             try:
                 # verify there's enough data
                 if len(self.sequences) >= 3:
@@ -233,16 +233,16 @@ class SelectorCV(ModelSelector):
                         # combine test sequences
                         X_test, lengths_test = combine_sequences(test_idx, self.sequences)
 
-                        hmm_model = self.base_model(num_states)
+                        hmm_model = self.base_model(n_components)
                         logL = hmm_model.score(X_test, lengths_test)
                 else:
-                    hmm_model = self.base_model(num_states)
+                    hmm_model = self.base_model(n_components)
                     logL = hmm_model.score(self.X, self.lengths)
 
                 logLs.append(logL)
-                CV_score_avg = np.mean(logLs)
-                CV_scores.append(tuple([CV_score_avg, hmm_model]))
+                cv_score_avg = np.mean(logLs)
+                cv_scores.append(tuple([cv_score_avg, hmm_model]))
 
             except Exception as e:
                 pass
-        return self.calc_best_CV_score(CV_scores)[1] if CV_scores else None
+        return self.calc_best_cv_score(cv_scores)[1] if cv_scores else None

@@ -496,20 +496,20 @@ for cv_train_idx, cv_test_idx in split_method.split(word_sequences):
 # 
 # **Tip:** The `hmmlearn` library may not be able to train or score all models.  Implement try/except contructs as necessary to eliminate non-viable models from consideration.
 
-# In[ ]:
+# In[57]:
 
 words_to_train = ['FISH', 'BOOK', 'VEGETABLE', 'FUTURE', 'JOHN']
 import timeit
 
 
-# In[ ]:
+# In[58]:
 
 # autoreload for automatically reloading changes made in my_model_selectors and my_recognizer
 get_ipython().magic('load_ext autoreload')
 get_ipython().magic('autoreload 2')
 
 
-# In[ ]:
+# In[68]:
 
 # TODO: Implement SelectorCV in my_model_selector.py
 from my_model_selectors import SelectorCV
@@ -520,7 +520,7 @@ Xlengths = training.get_all_Xlengths()
 for word in words_to_train:
     start = timeit.default_timer()
     model = SelectorCV(sequences, Xlengths, word, 
-                    min_n_components=2, max_n_components=15, random_state = 14).select()
+                    min_n_components=2, max_n_components=15, random_state=14).select()
     end = timeit.default_timer()-start
     if model is not None:
         print("Training complete for {} with {} states with time {} seconds".format(word, model.n_components, end))
@@ -528,7 +528,7 @@ for word in words_to_train:
         print("Training failed for {}".format(word))
 
 
-# In[ ]:
+# In[69]:
 
 # TODO: Implement SelectorBIC in module my_model_selectors.py
 from my_model_selectors import SelectorBIC
@@ -547,7 +547,7 @@ for word in words_to_train:
         print("Training failed for {}".format(word))
 
 
-# In[ ]:
+# In[70]:
 
 # TODO: Implement SelectorDIC in module my_model_selectors.py
 from my_model_selectors import SelectorDIC
