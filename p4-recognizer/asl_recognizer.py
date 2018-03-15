@@ -617,11 +617,11 @@ unittest.TextTestRunner().run(suite)
 # The objective of this section is to "put it all together".  Using the four feature sets created and the three model selectors, you will experiment with the models and present your results.  Instead of training only five specific words as in the previous section, train the entire set with a feature set and model selector strategy.  
 # ### Recognizer Tutorial
 # ##### Train the full training set
-# The following example trains the entire set with the example `features_ground` and `SelectorConstant` features and model selector.  Use this pattern for you experimentation and final submission cells.
+# The following example trains the entire set with the example `features_ground` and `SelectorConstant` features and model selector.  Use this pattern for your experimentation and final submission cells.
 # 
 # 
 
-# In[ ]:
+# In[72]:
 
 from my_model_selectors import SelectorConstant
 
@@ -646,7 +646,7 @@ print("Number of word models returned = {}".format(len(models)))
 # - the internal dictionary keys are the index of the test word rather than the word itself
 # - the getter methods are `get_all_sequences`, `get_all_Xlengths`, `get_item_sequences` and `get_item_Xlengths`
 
-# In[ ]:
+# In[73]:
 
 test_set = asl.build_test(features_ground)
 print("Number of test set items: {}".format(test_set.num_items))
