@@ -659,18 +659,18 @@ print("Number of test set sentences: {}".format(len(test_set.sentences_index)))
 # 
 # **Tip:** The hmmlearn library may not be able to train or score all models.  Implement try/except contructs as necessary to eliminate non-viable models from consideration.
 
-# In[ ]:
+# In[74]:
 
 # TODO implement the recognize method in my_recognizer
 from my_recognizer import recognize
 from asl_utils import show_errors
 
 
-# In[ ]:
+# In[76]:
 
 # TODO Choose a feature set and model selector
-features = features_ground # change as needed
-model_selector = SelectorConstant # change as needed
+features = features_custom # change as needed
+model_selector = SelectorCV # change as needed
 
 # TODO Recognize the test set and display the result with the show_errors method
 models = train_all_words(features, model_selector)
@@ -679,16 +679,69 @@ probabilities, guesses = recognize(models, test_set)
 show_errors(guesses, test_set)
 
 
-# In[ ]:
+# In[77]:
 
 # TODO Choose a feature set and model selector
+features = features_custom # change as needed
+model_selector = SelectorBIC # change as needed
+
 # TODO Recognize the test set and display the result with the show_errors method
+models = train_all_words(features, model_selector)
+test_set = asl.build_test(features)
+probabilities, guesses = recognize(models, test_set)
+show_errors(guesses, test_set)
 
 
-# In[ ]:
+# In[78]:
 
 # TODO Choose a feature set and model selector
+features = features_custom # change as needed
+model_selector = SelectorDIC # change as needed
+
 # TODO Recognize the test set and display the result with the show_errors method
+models = train_all_words(features, model_selector)
+test_set = asl.build_test(features)
+probabilities, guesses = recognize(models, test_set)
+show_errors(guesses, test_set)
+
+
+# In[79]:
+
+# TODO Choose a feature set and model selector
+features = features_polar # change as needed
+model_selector = SelectorDIC # change as needed
+
+# TODO Recognize the test set and display the result with the show_errors method
+models = train_all_words(features, model_selector)
+test_set = asl.build_test(features)
+probabilities, guesses = recognize(models, test_set)
+show_errors(guesses, test_set)
+
+
+# In[80]:
+
+# TODO Choose a feature set and model selector
+features = feat_grnd_rescaled # change as needed
+model_selector = SelectorDIC # change as needed
+
+# TODO Recognize the test set and display the result with the show_errors method
+models = train_all_words(features, model_selector)
+test_set = asl.build_test(features)
+probabilities, guesses = recognize(models, test_set)
+show_errors(guesses, test_set)
+
+
+# In[81]:
+
+# TODO Choose a feature set and model selector
+features = feat_delta_rescaled # change as needed
+model_selector = SelectorDIC # change as needed
+
+# TODO Recognize the test set and display the result with the show_errors method
+models = train_all_words(features, model_selector)
+test_set = asl.build_test(features)
+probabilities, guesses = recognize(models, test_set)
+show_errors(guesses, test_set)
 
 
 # **Question 3:**  Summarize the error results from three combinations of features and model selectors.  What was the "best" combination and why?  What additional information might we use to improve our WER?  For more insight on improving WER, take a look at the introduction to Part 4.
