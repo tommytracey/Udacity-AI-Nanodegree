@@ -752,7 +752,7 @@ show_errors(guesses, test_set)
 # ### Recognizer Unit Tests
 # Run the following unit tests as a sanity check on the defined recognizer.  The test simply looks for some valid values but is not exhaustive. However, the project should not be submitted if these tests don't pass.
 
-# In[ ]:
+# In[82]:
 
 from asl_test_recognizer import TestRecognize
 suite = unittest.TestLoader().loadTestsFromModule(TestRecognize())
