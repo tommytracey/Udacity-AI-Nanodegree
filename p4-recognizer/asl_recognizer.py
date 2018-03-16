@@ -666,50 +666,11 @@ from my_recognizer import recognize
 from asl_utils import show_errors
 
 
-# In[76]:
+# In[83]:
 
 # TODO Choose a feature set and model selector
-features = features_custom # change as needed
-model_selector = SelectorCV # change as needed
-
-# TODO Recognize the test set and display the result with the show_errors method
-models = train_all_words(features, model_selector)
-test_set = asl.build_test(features)
-probabilities, guesses = recognize(models, test_set)
-show_errors(guesses, test_set)
-
-
-# In[77]:
-
-# TODO Choose a feature set and model selector
-features = features_custom # change as needed
-model_selector = SelectorBIC # change as needed
-
-# TODO Recognize the test set and display the result with the show_errors method
-models = train_all_words(features, model_selector)
-test_set = asl.build_test(features)
-probabilities, guesses = recognize(models, test_set)
-show_errors(guesses, test_set)
-
-
-# In[78]:
-
-# TODO Choose a feature set and model selector
-features = features_custom # change as needed
-model_selector = SelectorDIC # change as needed
-
-# TODO Recognize the test set and display the result with the show_errors method
-models = train_all_words(features, model_selector)
-test_set = asl.build_test(features)
-probabilities, guesses = recognize(models, test_set)
-show_errors(guesses, test_set)
-
-
-# In[79]:
-
-# TODO Choose a feature set and model selector
-features = features_polar # change as needed
-model_selector = SelectorDIC # change as needed
+features = features_ground 
+model_selector = SelectorDIC 
 
 # TODO Recognize the test set and display the result with the show_errors method
 models = train_all_words(features, model_selector)
@@ -721,8 +682,8 @@ show_errors(guesses, test_set)
 # In[80]:
 
 # TODO Choose a feature set and model selector
-features = feat_grnd_rescaled # change as needed
-model_selector = SelectorDIC # change as needed
+features = feat_grnd_rescaled 
+model_selector = SelectorDIC 
 
 # TODO Recognize the test set and display the result with the show_errors method
 models = train_all_words(features, model_selector)
@@ -731,11 +692,24 @@ probabilities, guesses = recognize(models, test_set)
 show_errors(guesses, test_set)
 
 
-# In[81]:
+# In[84]:
 
 # TODO Choose a feature set and model selector
-features = feat_delta_rescaled # change as needed
-model_selector = SelectorDIC # change as needed
+features = feat_delta_rescaled 
+model_selector = SelectorDIC 
+
+# TODO Recognize the test set and display the result with the show_errors method
+models = train_all_words(features, model_selector)
+test_set = asl.build_test(features)
+probabilities, guesses = recognize(models, test_set)
+show_errors(guesses, test_set)
+
+
+# In[78]:
+
+# TODO Choose a feature set and model selector
+features = features_custom # includes feat_grnd_rescaled + feat_delta_rescaled
+model_selector = SelectorDIC 
 
 # TODO Recognize the test set and display the result with the show_errors method
 models = train_all_words(features, model_selector)
@@ -747,6 +721,28 @@ show_errors(guesses, test_set)
 # **Question 3:**  Summarize the error results from three combinations of features and model selectors.  What was the "best" combination and why?  What additional information might we use to improve our WER?  For more insight on improving WER, take a look at the introduction to Part 4.
 # 
 # **Answer 3:**
+# 
+# After running an initial battery of tests, I decided to focus on the DIC selector since it produced the best results across different data sets. Here are the results for the *four* combinations which I think yielded the most interesting insights. (I apologize for the extra combination, but it's key to the story.)
+# 
+# | Features | Selector | WER |
+# |---|---|---|
+# |features_ground | DIC | 0.590 |
+# |feat_grnd_rescaled | DIC | 0.528 |
+# |feat_delta_rescaled | DIC | 0.567 |
+# |feat_grnd_rescaled + feat_delta_rescaled | DIC | 0.376 |
+# 
+# 
+# Running the model on the ground features produces a WER just barely under the 0.60 threshold. Rescaling the ground features improved the WER to 0.528 (more than 10%), which is a pretty significant error reduction considering all we did is rescale the values between [0, 1]. By contrast, the rescaled delta features only produced a WER of 0.567. 
+# 
+# This is where it gets interesting. By including both the rescaled ground features and the rescaled delta features in the same training set, the WER suddently falls to 0.376! This is a 29% reduction in error by simply combining two sets of features which by themselves only performed marginally better than the 0.60 WER target.
+# 
+# This demonstrates how multiple sets of features can compliment each other to unlock significant improvements in model performance. In this case it makes intuitive sense. The results tell us that the person's hand position (represented by the ground features) **and** the subsequent changes in hand position over time (represented by the delta features) are both crucial to understanding sign language. Eliminating either of these makes sign language much harder to understand.
+# 
+# Secondarily, the results also demonstrate that rescaling is an effective technique to boost model convergence. 
+# 
+# Given these results, in order to further improve the WER, I would continue to create and combine different sets of rescaled features. Perhaps there are other combinations that work even better. Also, I'd experiment with ensembling so I could test a variety of model types in parallel. 
+# 
+# 
 
 # <a id='part3_test'></a>
 # ### Recognizer Unit Tests
