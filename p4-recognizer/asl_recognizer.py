@@ -740,7 +740,7 @@ show_errors(guesses, test_set)
 # 
 # Secondarily, the results also demonstrate that rescaling is an effective technique to boost model convergence. 
 # 
-# Given these results, in order to further improve the WER, I would continue to create and combine different sets of rescaled features. Perhaps there are other combinations that work even better. Also, I'd experiment with ensembling so I could test a variety of model types in parallel. 
+# I believe the best way to improve on these results would be to account for the context of a given word using N-grams &mdash; i.e., compute the probability of a word being adjacent to another. However, given the results above, you may also improve the WER by continuing to combine different sets of rescaled features. Perhaps there are other combinations that work even better. Also, I'd experiment with ensembling so I could test a variety of model types in parallel.
 # 
 # 
 
