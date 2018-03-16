@@ -1,5 +1,5 @@
-#### Udacity Artificial Intelligence Engineer Nanodegree
-## Probabilistic Models
+### Udacity Artificial Intelligence Engineer Nanodegree
+#### Probabilistic Models
 # Term 1 / Project 4: Sign Language Recognition System
 
 ##### &nbsp;
@@ -10,7 +10,10 @@ The overall goal of this project is to build a word recognizer for American Sign
 In this video, the right-hand x and y locations are plotted as the speaker signs the sentence.
 [![ASLR demo](http://www-i6.informatik.rwth-aachen.de/~dreuw/images/demosample.png)](https://drive.google.com/open?id=0B_5qGuFe-wbhUXRuVnNZVnMtam8)
 
-The raw data, train, and test sets are pre-defined. Students must derive a variety of feature sets, as well as implement three different model selection criterion to determine the optimal number of hidden states for each word model. Finally, students must implement the recognizer and compare the effects the different combinations of feature sets and model selection criteria.  
+The raw data, train, and test sets are pre-defined. Students must derive a variety of feature sets, as well as implement three different model selection criterion to determine the optimal number of hidden states for each word model. Finally, students must implement the recognizer and compare the effects the different combinations of feature sets and model selection criteria. 
+
+##### &nbsp;
+
 ## Results
 - All of the work for this project is outlined in [this Jupyter notebook (asl_recognizer.ipynb)](https://github.com/tommytracey/Udacity-AI-Nanodegree/blob/master/p4-recognizer/asl_recognizer.ipynb)
 - The code can be found in these two files: [my_model_selectors.py](https://github.com/tommytracey/Udacity-AI-Nanodegree/blob/master/p4-recognizer/my_model_selectors.py), [my_recognizer.py](https://github.com/tommytracey/Udacity-AI-Nanodegree/blob/master/p4-recognizer/my_recognizer.py)
