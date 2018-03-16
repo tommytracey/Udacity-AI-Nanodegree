@@ -1,6 +1,28 @@
-# Artificial Intelligence Engineer Nanodegree
+#### Udacity Artificial Intelligence Engineer Nanodegree
 ## Probabilistic Models
-## Project: Sign Language Recognition System
+# Term 1 / Project 4: Sign Language Recognition System
+
+##### &nbsp;
+
+## Goal
+The overall goal of this project is to build a word recognizer for American Sign Language video sequences, demonstrating the power of probabalistic models.  In particular, this project employs  [hidden Markov models (HMM's)](https://en.wikipedia.org/wiki/Hidden_Markov_model) to analyze a series of measurements taken from videos of American Sign Language (ASL) collected for research (see the [RWTH-BOSTON-104 Database](http://www-i6.informatik.rwth-aachen.de/~dreuw/database-rwth-boston-104.php)).  
+
+In this video, the right-hand x and y locations are plotted as the speaker signs the sentence.
+[![ASLR demo](http://www-i6.informatik.rwth-aachen.de/~dreuw/images/demosample.png)](https://drive.google.com/open?id=0B_5qGuFe-wbhUXRuVnNZVnMtam8)
+
+The raw data, train, and test sets are pre-defined. Students must derive a variety of feature sets, as well as implement three different model selection criterion to determine the optimal number of hidden states for each word model. Finally, students must implement the recognizer and compare the effects the different combinations of feature sets and model selection criteria.  
+## Results
+- All of the work for this project is outlined in [this Jupyter notebook (asl_recognizer.ipynb)](https://github.com/tommytracey/Udacity-AI-Nanodegree/blob/master/p4-recognizer/asl_recognizer.ipynb)
+- The code can be found in these two files: [my_model_selectors.py](https://github.com/tommytracey/Udacity-AI-Nanodegree/blob/master/p4-recognizer/my_model_selectors.py), [my_recognizer.py](https://github.com/tommytracey/Udacity-AI-Nanodegree/blob/master/p4-recognizer/my_recognizer.py)
+
+
+##### &nbsp;
+
+---
+
+# Project Starter Code
+In case you want to run this project yourself, below is the project starter code. 
+
 
 ### Install
 
