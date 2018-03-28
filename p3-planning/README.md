@@ -228,7 +228,7 @@ Goal(At(C1, JFK) ∧ At(C2, SFO))
 ```
 Here are the results from all the searches that I performed, including both uninformed and heuristic searches.
 
-![problem 1](problem-1c.jpg)
+![problem 1](results/problem-1c.jpg)
 
 Here is the optimal plan (6 steps total), and presumably the two sets of actions could be executed in parallel.
 
@@ -267,7 +267,7 @@ Goal(At(C1, JFK) ∧ At(C2, SFO) ∧ At(C3, SFO))
 
 Here are the results from all the searches that I performed, including both uninformed and heuristic searches. Although, note that some of the searches did not finish in the allotted 10-minute timeframe.
 
-![problem 2](problem-2c.jpg)
+![problem 2](results/problem-2c.jpg)
 
 Here is the optimal plan (9 steps total), and presumably the three sets of actions could be done in parallel.
 
@@ -311,7 +311,7 @@ Goal(At(C1, JFK) ∧ At(C3, JFK) ∧ At(C2, SFO) ∧ At(C4, SFO))
 Here are the results from all the searches that I performed, including both uninformed and heuristic searches. Although, note that some of the searches did not finish in the allotted 10-minute timeframe.
 
 
-![problem 3](problem-3.jpg)
+![problem 3](results/problem-3.jpg)
 
 Here is the optimal plan (12 steps total), and presumably the two sets of actions could be performed in parallel.
 
@@ -347,7 +347,7 @@ _Read up on important historical developments in the field of AI planning and se
 
 
 ### My Research Review
-[Here is a link](research_review.pdf) to a PDF version of my research review.
+[Here is a link](results/research_review.pdf) to a PDF version of my research review.
 
 ---
 
@@ -371,7 +371,7 @@ _Read up on important historical developments in the field of AI planning and se
 
 This project includes skeletons for the classes and functions needed to solve deterministic logistics planning problems for an Air Cargo transport system using a planning search agent.
 
-With progression search algorithms like those in the navigation problem from lecture, optimal plans for each 
+With progression search algorithms like those in the navigation problem from lecture, optimal plans for each
 problem will be computed.  Unlike the navigation problem, there is no simple distance heuristic to aid the agent.
 Instead, you will implement domain-independent heuristics.
 ![Progression air cargo search](images/Progression.PNG)
